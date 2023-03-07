@@ -3,8 +3,11 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.util.HashMap;
+import etu2040.framework.*;
 
 public class FrontServlet extends HttpServlet {
+    HashMap<String,Mapping> mappingUrl = new HashMap<String, Mapping>();
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
             response.setContentType("text/plain");
