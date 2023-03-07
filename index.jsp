@@ -1,3 +1,4 @@
+<%@ page import='etu2040.framework.servlet.*' %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,7 +7,7 @@
 </head>
 <body>
 	<h1> Page accueil vers meme servlet </h1>
-	<form action="/FrontServlet" method="GET"> 
+	<form action="url/FrontServlet" method="GET"> 
 		input 1:<input type="text" name="i1"> </input>
 		input 2:<input type="text" name="i2"> </input>
 		<input type="submit" value="Insert"> </body>
