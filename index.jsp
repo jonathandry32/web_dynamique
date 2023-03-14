@@ -7,7 +7,7 @@
 </head>
 <body>
 	<h1> Page accueil vers meme servlet </h1>
-	<form action="url/FrontServlet" method="GET"> 
+	<form action="url/Emp-add" method="GET"> 
 		input 1:<input type="text" name="i1"> </input>
 		input 2:<input type="text" name="i2"> </input>
 		<input type="submit" value="Insert"> </body>
