@@ -11,14 +11,17 @@ import java.util.List;
 import java.util.Map;
 public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrl = new HashMap<String, Mapping>();
+    String pck="";
     public void init() throws ServletException{
+        ServletContext ctxt=getServletContext();
+        this.pck=ctxt.getInitParameter("package");
         try{
             loadAnnotation();
         }
         catch(Exception e){}
     }
     public void loadAnnotation()throws Exception{ 
-        List<Class<?>> controllers = Annot.getClassesWithAnnotation(CAnnot.class);
+        List<Class<?>> controllers = Annot.getClassesWithAnnotationBis(CAnnot.class,this.pck);
         for(Class<?> ca : controllers) {
             Method[] controllerMethods = ca.getMethods();
             for(Method method : controllerMethods) {
@@ -58,6 +61,7 @@ public class FrontServlet extends HttpServlet {
                 url=url+"?"+requete;
             }
             out.println(url);
+            out.println(this.pck);
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
