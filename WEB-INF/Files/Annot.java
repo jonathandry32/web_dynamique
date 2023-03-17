@@ -19,6 +19,30 @@ public class Annot {
         }
         return classes;
     }
+    public static List<Class<?>> getClassesWithAnnotationBis(Class<? extends Annotation> annotation,String pck)throws Exception {
+        List<Class<?>> classes = new ArrayList<>();
+        for (Class<?> cls : getClassesInPackage(pck)) {
+            if (cls.isAnnotationPresent(annotation)) {
+                classes.add(cls);
+            }
+        }
+        return classes;
+    }
+    private static List<Class<?>> getClassesInPackageBis(String packageName) throws ClassNotFoundException, URISyntaxException, IOException {
+        List<Class<?>> classes = new ArrayList<>();
+        String path = packageName.replace('.', '/');
+        File directory = new File(Thread.currentThread().getContextClassLoader().getResource(path).getFile());
+        for(File file : directory.listFiles()){
+            if(file.isFile()&&file.getName().endsWith(".class")){
+                String className=packageName+"."+file.getName().substring(0,file.getName().length()-6);
+                classes.add(Class.forName(className));
+            }
+            else if(file.isDirectory()){
+                classes.addAll(getClassesInPackageBis(packageName+"."+file.getName()));
+            }
+        }
+        return classes;
+    }
     private static List<Class<?>> getClassesInPackage(String packageName) throws ClassNotFoundException, URISyntaxException, IOException {
         List<Class<?>> classes = new ArrayList<>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
