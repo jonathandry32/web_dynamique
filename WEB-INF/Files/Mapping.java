@@ -1,11 +1,11 @@
 package etu2040.framework;
-
 public class Mapping {
     String className;
     String method;
-
-    public Mapping(){
-
+    public Mapping(){}
+    public Mapping(String className,String method){
+        setClassName(className);
+        setMethod(method);
     }
     public void setClassName(String value){
         if(value!=""){
