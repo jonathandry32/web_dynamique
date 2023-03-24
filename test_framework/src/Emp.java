@@ -1,4 +1,5 @@
 package etu2040.framework.app.modele;
+import etu2040.framework.*;
 import etu2040.framework.servlet.annotations.*;
 @CAnnot
 public class Emp{
@@ -23,8 +24,9 @@ public class Emp{
 		return this.name;
 	}
 	@UrlAnnot(url="Emp-add")
-	public String add(){
+	public ModelView add(){
 		String result="method add appelle de la classe emp";
-		return result;
+		ModelView mv=new ModelView("../list.jsp");
+		return mv;
 	}
 }
