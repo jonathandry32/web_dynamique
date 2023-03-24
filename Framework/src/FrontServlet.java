@@ -34,13 +34,11 @@ public class FrontServlet extends HttpServlet {
             }
         }
     }
-    public String eval(String className,String method) throws Exception{
-        String result="";
+    public Object eval(String className,String method) throws Exception{
         Class<?> c=Class.forName(className);
         Method m=c.getDeclaredMethod(method);
         Object obj=c.newInstance();
-        result=(String) m.invoke(m);
-        return result;
+        return m.invoke(obj);
     }   
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
             response.setContentType("text/plain");
@@ -52,22 +50,28 @@ public class FrontServlet extends HttpServlet {
                 url+=url_[i];
             }
             String requete=request.getQueryString();
-            try{
-                out.println("la class: "+mappingUrl.get(url).getClassName());
-                out.println("la method: "+mappingUrl.get(url).getMethod());
+            out.println("la class: "+mappingUrl.get(url).getClassName());
+            out.println("la method: "+mappingUrl.get(url).getMethod());
+            ModelView valiny=(ModelView) eval(mappingUrl.get(url).getClassName(),mappingUrl.get(url).getMethod());
+            if(valiny.getClass()==ModelView.class){
+                RequestDispatcher dispat = request.getRequestDispatcher(valiny.getView());
+                dispat.forward(request,response);
             }
-            catch(Exception e){}
-            if (requete!=null) {
-                url=url+"?"+requete;
+            else{
+                if (requete!=null) {
+                    url=url+"?"+requete;
+                }
+                out.println(url);
+                out.println(this.pck);
             }
-            out.println(url);
-            out.println(this.pck);
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

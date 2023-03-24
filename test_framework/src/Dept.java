@@ -1,4 +1,5 @@
 package etu2040.framework.app.modele;
+import etu2040.framework.*;
 import etu2040.framework.servlet.annotations.*;
 @CAnnot
 public class Dept{
@@ -23,8 +24,9 @@ public class Dept{
 		return this.name;
 	}
 	@UrlAnnot(url="Dept-insert")
-	public String insert(){
+	public ModelView insert(){
 		String result="method insert appelle de la classe dept";
-		return result;
+		ModelView mv=new ModelView("../list.jsp");
+		return mv;
 	}
 }
