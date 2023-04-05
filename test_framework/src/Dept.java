@@ -1,6 +1,7 @@
 package etu2040.framework.app.modele;
 import etu2040.framework.*;
 import etu2040.framework.servlet.annotations.*;
+import etu2040.framework.app.modele.*;
 @CAnnot
 public class Dept{
 	int id;
@@ -25,7 +26,6 @@ public class Dept{
 	}
 	@UrlAnnot(url="Dept-insert")
 	public ModelView insert(){
-		String result="method insert appelle de la classe dept";
 		ModelView mv=new ModelView("../list.jsp");
 		return mv;
 	}

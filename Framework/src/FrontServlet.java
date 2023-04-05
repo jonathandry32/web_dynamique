@@ -8,13 +8,14 @@ import etu2040.framework.servlet.annotations.*;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrl = new HashMap<String, Mapping>();
     String pck="";
     public void init() throws ServletException{
         ServletContext ctxt=getServletContext();
         this.pck=ctxt.getInitParameter("package");
+        
         try{
             loadAnnotation();
         }
@@ -40,7 +41,7 @@ public class FrontServlet extends HttpServlet {
         Object obj=c.newInstance();
         return m.invoke(obj);
     }   
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
             response.setContentType("text/plain");
 		    PrintWriter out = response.getWriter();
             String url=request.getRequestURL().toString();
@@ -50,22 +51,33 @@ public class FrontServlet extends HttpServlet {
                 url+=url_[i];
             }
             String requete=request.getQueryString();
-            out.println("la class: "+mappingUrl.get(url).getClassName());
-            out.println("la method: "+mappingUrl.get(url).getMethod());
-            ModelView valiny=(ModelView) eval(mappingUrl.get(url).getClassName(),mappingUrl.get(url).getMethod());
-            if(valiny.getClass()==ModelView.class){
-                RequestDispatcher dispat = request.getRequestDispatcher(valiny.getView());
-                dispat.forward(request,response);
-            }
-            else{
-                if (requete!=null) {
-                    url=url+"?"+requete;
+            if(mappingUrl.containsKey(url)){
+                out.println("la class: "+mappingUrl.get(url).getClassName());
+                out.println("la method: "+mappingUrl.get(url).getMethod());
+                try{
+                    ModelView valiny = (ModelView) eval(mappingUrl.get(url).getClassName(),mappingUrl.get(url).getMethod());
+                    out.println(valiny.getView());
+                    out.println(valiny.getData());
+                    if(valiny.getClass()==ModelView.class){
+                        RequestDispatcher dispat = request.getRequestDispatcher(valiny.getView());
+                        for (HashMap.Entry<String,Object> data : valiny.getData().entrySet()) {
+                            request.setAttribute(data.getKey(),data.getValue());
+                        }
+                        dispat.forward(request,response);
+                    }
+                    else{
+                        if (requete!=null) {
+                            url=url+"?"+requete;
+                        }
+                        out.println(url);
+                        out.println(this.pck);
+                    }
                 }
-                out.println(url);
-                out.println(this.pck);
+                catch(Exception ee){
+                    ee.printStackTrace(out);
+                }
             }
     }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -77,4 +89,5 @@ public class FrontServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
+//jar -cfv C:\Users\ITU\Desktop\apache-tomcat-8.5.75\webapps\test_framework.war ../../dossier_a_envoyer
 }
