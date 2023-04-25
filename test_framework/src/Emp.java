@@ -40,4 +40,10 @@ public class Emp{
 		mv.addItem("listEmp",listEmp);
 		return mv;
 	}
+	
+	@UrlAnnot(url="Emp-save")
+	public void save(){
+		System.out.println("id: "+this.get_id());
+		System.out.println("name: "+this.get_name());
+	}
 }

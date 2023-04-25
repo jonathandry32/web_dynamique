@@ -29,4 +29,9 @@ public class Dept{
 		ModelView mv=new ModelView("../list.jsp");
 		return mv;
 	}
+	@UrlAnnot(url="Dept-save")
+	public void save(){
+		System.out.println("id: "+this.get_id());
+		System.out.println("name: "+this.get_name());
+	}
 }
