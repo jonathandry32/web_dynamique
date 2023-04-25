@@ -8,8 +8,8 @@
 <body>
 	<h1> Page accueil vers meme servlet </h1>
 	<form action="url/Emp-add" method="GET"> 
-		input 1:<input type="text" name="i1"> </input>
-		input 2:<input type="text" name="i2"> </input>
+		Id :<input type="text" name="id" required> </input>
+		Name :<input type="text" name="name" required> </input>
 		<input type="submit" value="Insert"> </body>
 	</form>
 </body>
