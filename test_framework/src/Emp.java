@@ -4,15 +4,15 @@ import etu2040.framework.servlet.annotations.*;
 import java.util.*;
 @CAnnot
 public class Emp{
-	int id;
+	Integer id;
 	String name;
 
 	public Emp(){}
-	public Emp(int id,String name){
+	public Emp(Integer id,String name){
 		set_id(id);
 		set_name(name);
 	}
-	public void set_id(int value){
+	public void set_id(Integer value){
 		if (value>0) {
 			this.id=value;
 		}
@@ -22,7 +22,7 @@ public class Emp{
 			this.name=value;
 		}
 	}
-	public int get_id(){
+	public Integer get_id(){
 		return this.id;
 	}
 	public String get_name(){
@@ -39,6 +39,11 @@ public class Emp{
 		//mv.setView("../list.jsp");
 		mv.addItem("listEmp",listEmp);
 		return mv;
+	}
+
+	@UrlAnnot(url="Emp-pist")
+	public void pist(String idEmp,Integer ageEmp){
+		System.out.println(idEmp+" sy "+ageEmp);
 	}
 	
 	@UrlAnnot(url="Emp-save")

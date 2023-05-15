@@ -36,11 +36,35 @@ public class FrontServlet extends HttpServlet {
             }
         }
     }
-    public Object eval(Object obj,String method) throws Exception{
+    public <T> T castin(String value,Class<T> clazz)throws Exception{
+        Constructor<T> constructor = clazz.getConstructor(String.class);
+        return constructor.newInstance(value);
+    } 
+    public Object eval(Object obj,String method,String[] attributes,HttpServletRequest request) throws Exception{
         Class<?> c = obj.getClass();
-        Method m=c.getDeclaredMethod(method);
-        Object result = m.invoke(obj);
-        return result;
+        Method m = null;
+        Method[] methods = c.getMethods();
+        for(Method me : methods){
+            if(me.getName().equalsIgnoreCase(method)){
+                m = me;
+            }
+        }
+        ArrayList<Object> temp=new ArrayList<Object>();
+        Parameter[] param = m.getParameters();
+        for(int i=0;i<param.length;i++){
+            for(int j=0;j<attributes.length;j++){
+                Class<?> type = param[i].getType();
+                if(param[i].getName().equalsIgnoreCase("arg"+j)){
+                    temp.add(castin(request.getParameter(attributes[j]),type));
+                }
+            }
+        }
+        if(temp.size()>0){
+            return m.invoke(obj,(Object[]) temp.toArray());
+        }
+        else{
+            return m.invoke(obj);
+        }
     }
     public Object settena(String className,String[] attributes,HttpServletRequest request) throws Exception{
         Class<?> c=Class.forName(className);
@@ -51,15 +75,7 @@ public class FrontServlet extends HttpServlet {
             String temp = "set_"+attribute;
             for(Method method : methods){
                 if(method.getName().equalsIgnoreCase(temp)){
-                    if(c.getDeclaredField(attribute).getType()==int.class){
-                        method.invoke(obj,Integer.valueOf(request.getParameter(attribute)));
-                    }
-                    else if(c.getDeclaredField(attribute).getType()==String.class){
-                        method.invoke(obj,request.getParameter(attribute));
-                    }
-                    else{
-                        method.invoke(obj,c.getDeclaredField(attribute).getType().cast(request.getParameter(attribute)));
-                    }
+                    castin(request.getParameter(attribute),c.getDeclaredField(attribute).getType());
                     break;
                 }
             }
@@ -88,7 +104,7 @@ public class FrontServlet extends HttpServlet {
                     out.println("la method: "+mappingUrl.get(url).getMethod());
                     String[] viewdata =  getViewData(request);
                     Object tempp = settena(mappingUrl.get(url).getClassName(),viewdata,request);
-                    Object valiny = eval(tempp,mappingUrl.get(url).getMethod());
+                    Object valiny = eval(tempp,mappingUrl.get(url).getMethod(),viewdata,request);
                     if(valiny!=null){
                         if(valiny.getClass()==ModelView.class){
                             ModelView valiny2 = (ModelView) valiny; 
@@ -123,5 +139,4 @@ public class FrontServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-//jar -cfv C:\Users\ITU\Desktop\apache-tomcat-8.5.75\webapps\test_framework.war ../../dossier_a_envoyer
 }
