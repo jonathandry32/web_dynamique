@@ -10,6 +10,14 @@ import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
+import javax.servlet.http.Part;
+import java.util.Collection;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+
+@WebServlet("/upload")
+@MultipartConfig
 public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrl = new HashMap<String, Mapping>();
     String pck="";
@@ -21,6 +29,9 @@ public class FrontServlet extends HttpServlet {
             loadAnnotation();
         }
         catch(Exception e){}
+    }
+    public void uploadFile()throws Exception{
+        
     }
     public void loadAnnotation()throws Exception{ 
         List<Class<?>> controllers = Annot.getClassesWithAnnotationBis(CAnnot.class,this.pck);
@@ -66,6 +77,46 @@ public class FrontServlet extends HttpServlet {
             return m.invoke(obj);
         }
     }
+
+    public String getFileName(Part part) {
+        String contentDisposition = part.getHeader("content-disposition");
+        String[] parts = contentDisposition.split(";");
+        for (String partValue : parts) {
+            if (partValue.trim().startsWith("filename")) {
+                return partValue.substring(partValue.indexOf('=') + 1).trim().replace("\"", "");
+            }
+        }
+        return null;
+    }
+    public void getFileUpload (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String uploadPath = "C:/Users/ITU/Desktop/apache-tomcat-8.5.75/webapps/test_framework/uploads";
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+        try {
+            Collection<Part> parts = request.getParts();
+            for (Part part : parts) {
+                if (part.getName().equals("file")) {
+                    String fileName = getFileName(part);
+                    InputStream inputStream = part.getInputStream();
+                    File file = new File(uploadDir, fileName);
+                    OutputStream outputStream = new FileOutputStream(file);
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    outputStream.close();
+                    inputStream.close();
+                    response.getWriter().println("Le fichier a été uploadé avec succès : " + file.getAbsolutePath());
+                }
+            }
+        } catch (IOException e) {
+            response.getWriter().println("Une erreur s'est produite lors de l'upload du fichier : " + e.getMessage());
+        }
+    }
+
     public Object settena(String className,String[] attributes,HttpServletRequest request) throws Exception{
         Class<?> c=Class.forName(className);
         Object obj=c.newInstance();
@@ -97,7 +148,10 @@ public class FrontServlet extends HttpServlet {
             for (int i=5;i<url_.length;i++) {
                 url+=url_[i];
             }
-            String requete=request.getQueryString();
+            if(url.equalsIgnoreCase("upload")){
+                this.getFileUpload(request,response);
+            }
+            String requete = request.getQueryString();
             if(mappingUrl.containsKey(url)){
                 try{
                     out.println("la class: "+mappingUrl.get(url).getClassName());
