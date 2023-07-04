@@ -3,14 +3,18 @@ import etu2040.framework.*;
 import etu2040.framework.servlet.annotations.*;
 import java.util.*;
 @CAnnot
+//@Scope(valeur="singleton")
+@Scope(valeur="")
 public class Emp{
 	Integer id;
 	String name;
+	int appel=1;
 
 	public Emp(){}
 	public Emp(Integer id,String name){
 		set_id(id);
 		set_name(name);
+		this.appel+=1;
 	}
 	public void set_id(Integer value){
 		if (value>0) {
@@ -40,7 +44,18 @@ public class Emp{
 		mv.addItem("listEmp",listEmp);
 		return mv;
 	}
-
+	@UrlAnnot(url="Emp-addJ")
+	public ModelView addJ(){
+		ArrayList<Emp> listEmp=new ArrayList<Emp>();
+			Emp a=new Emp(1,"hgfyu");
+			Emp b=new Emp(2,"tydi");
+			listEmp.add(a);
+			listEmp.add(b);
+		ModelView mv=new ModelView();
+		mv.addItem("listEmp",listEmp);
+		mv.setIsJson(true);
+		return mv;
+	}
 	@UrlAnnot(url="Emp-pist")
 	public void pist(String idEmp,Integer ageEmp){
 		System.out.println(idEmp+" sy "+ageEmp);
