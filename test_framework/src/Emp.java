@@ -44,7 +44,26 @@ public class Emp{
 		mv.addItem("listEmp",listEmp);
 		return mv;
 	}
-
+	@UrlAnnot(url="Emp-addJ")
+	public ModelView addJ(){
+		ArrayList<Emp> listEmp=new ArrayList<Emp>();
+			Emp a=new Emp(1,"hgfyu");
+			Emp b=new Emp(2,"tydi");
+			listEmp.add(a);
+			listEmp.add(b);
+		ModelView mv=new ModelView();
+		mv.addItem("listEmp",listEmp);
+		mv.setIsJson(true);
+		return mv;
+	}
+	@UrlAnnot(url="Emp-addJ")
+	@RestAPI
+	public Emp[] addR(){
+		Emp[] list=new Emp[2];
+		list[0]=new Emp(1,"rara");
+		list[1]=new Emp(2,"adadf");
+		return list;
+	}
 	@UrlAnnot(url="Emp-pist")
 	public void pist(String idEmp,Integer ageEmp){
 		System.out.println(idEmp+" sy "+ageEmp);

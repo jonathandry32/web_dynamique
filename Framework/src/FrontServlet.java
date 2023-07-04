@@ -21,6 +21,7 @@ import javax.servlet.annotation.WebServlet;
 public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrl = new HashMap<String, Mapping>();
      HashMap<Class,Object> singleton= new HashMap<Class,Object>();
+     Gson gson = new Gson();
     String pck="";
     public void init() throws ServletException{
         ServletContext ctxt=getServletContext();
@@ -92,9 +93,15 @@ public class FrontServlet extends HttpServlet {
             }
         }
         if(temp.size()>0){
+            if(m.isAnnotationPresent(RestAPI.class)){
+                System.out.println( gson.toJson(m.invoke(obj,(Object[]) temp.toArray())));
+            }
             return m.invoke(obj,(Object[]) temp.toArray());
         }
         else{
+            if(m.isAnnotationPresent(RestAPI.class)){
+                System.out.println( gson.toJson(m.invoke(obj)));
+            }
             return m.invoke(obj);
         }
     }
@@ -193,10 +200,15 @@ public class FrontServlet extends HttpServlet {
                         if(valiny.getClass()==ModelView.class){
                             ModelView valiny2 = (ModelView) valiny; 
                             RequestDispatcher dispat = request.getRequestDispatcher(valiny2.getView());
-                            for (HashMap.Entry<String,Object> data : valiny2.getData().entrySet()) {
-                                request.setAttribute(data.getKey(),data.getValue());
+                            if(valiny2.getIsJson()==true){
+                                 out.println( gson.toJson(valiny2.getData()) );
                             }
-                            dispat.forward(request,response);
+                            else{
+                                for (HashMap.Entry<String,Object> data : valiny2.getData().entrySet()) {
+                                    request.setAttribute(data.getKey(),data.getValue());
+                                }
+                                dispat.forward(request,response);
+                            }
                         }
                         else{
                             if (requete!=null) {
