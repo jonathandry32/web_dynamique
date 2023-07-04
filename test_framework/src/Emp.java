@@ -56,6 +56,14 @@ public class Emp{
 		mv.setIsJson(true);
 		return mv;
 	}
+	@UrlAnnot(url="Emp-addJ")
+	@RestAPI
+	public Emp[] addR(){
+		Emp[] list=new Emp[2];
+		list[0]=new Emp(1,"rara");
+		list[1]=new Emp(2,"adadf");
+		return list;
+	}
 	@UrlAnnot(url="Emp-pist")
 	public void pist(String idEmp,Integer ageEmp){
 		System.out.println(idEmp+" sy "+ageEmp);
