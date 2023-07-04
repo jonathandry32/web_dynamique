@@ -20,15 +20,36 @@ import javax.servlet.annotation.WebServlet;
 @MultipartConfig
 public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrl = new HashMap<String, Mapping>();
+     HashMap<Class,Object> singleton= new HashMap<Class,Object>();
     String pck="";
     public void init() throws ServletException{
         ServletContext ctxt=getServletContext();
         this.pck=ctxt.getInitParameter("package");
         
         try{
+            if(c.isAnnotationPresent(Scope.class)){
+                Scope scope= c.getAnnotation(Scope.class);
+                if(scope.valeur().equals("singleton")){
+                    Object obj= c.newInstance();
+                    this.singleton.put(c,obj);
+                }
+            }
             loadAnnotation();
         }
         catch(Exception e){}
+    }
+    public void reset(HttpServletRequest request, Field[] att, Object o){
+        try{
+            for(int i=0; i<att.length; i++){
+                Method m= o.getClass().getMethod("set_" + att[i].getName(), att[i].getType());
+                if(att[i].getType()==String.class) m.invoke(o, null);
+                if(att[i].getType()==int.class || att[i].getType()==double.class)  m.invoke(o,0);
+                if(att[i].getType()==Date.class)  m.invoke(o, null);
+                if(att[i].getType()==Boolean.class)  m.invoke(o, "false");
+            }
+        }catch(Exception e){
+        
+        }
     }
     public void uploadFile()throws Exception{
         
@@ -94,7 +115,7 @@ public class FrontServlet extends HttpServlet {
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
-        try {
+        /*  try {
             Collection<Part> parts = request.getParts();
             for (Part part : parts) {
                 if (part.getName().equals("file")) {
@@ -114,12 +135,21 @@ public class FrontServlet extends HttpServlet {
             }
         } catch (IOException e) {
             response.getWriter().println("Une erreur s'est produite lors de l'upload du fichier : " + e.getMessage());
-        }
+        }*/
     }
 
     public Object settena(String className,String[] attributes,HttpServletRequest request) throws Exception{
         Class<?> c=Class.forName(className);
-        Object obj=c.newInstance();
+        Object obj=null;
+        if(this.singleton.containsKey(c)){
+            Field[] att= c.getDeclaredFields();
+            obj = this.singleton.get(c);
+            this.reset(request, att, obj);
+            //out.print("singleton");
+        }else{
+            obj= c.newInstance();
+            //out.print("tsy singleton");
+        }
         Class<?> cls = obj.getClass();
         Method[] methods = cls.getMethods();
         for(String attribute : attributes){
