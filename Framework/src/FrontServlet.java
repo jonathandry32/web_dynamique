@@ -22,6 +22,7 @@ public class FrontServlet extends HttpServlet {
     HashMap<String,Mapping> mappingUrl = new HashMap<String, Mapping>();
      HashMap<Class,Object> singleton= new HashMap<Class,Object>();
      Gson gson = new Gson();
+
     String pck="";
     public void init() throws ServletException{
         ServletContext ctxt=getServletContext();
