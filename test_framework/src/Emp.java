@@ -3,14 +3,18 @@ import etu2040.framework.*;
 import etu2040.framework.servlet.annotations.*;
 import java.util.*;
 @CAnnot
+//@Scope(valeur="singleton")
+@Scope(valeur="")
 public class Emp{
 	Integer id;
 	String name;
+	int appel=1;
 
 	public Emp(){}
 	public Emp(Integer id,String name){
 		set_id(id);
 		set_name(name);
+		this.appel+=1;
 	}
 	public void set_id(Integer value){
 		if (value>0) {
